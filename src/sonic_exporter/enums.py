@@ -1,3 +1,18 @@
+# Copyright 2021 STORDIS GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import enum
 
 
@@ -11,10 +26,18 @@ class InternetProtocol(enum.Enum):
     v6 = "IPv6"
 
 
+# AFI
 class AddressFamily(enum.Enum):
-    IPV4 = "ipv4Unicast"
-    IPV6 = "ipv6Unicast"
-    L2VPN_EVPN = "l2VpnEvpn"
+    IPV4 = "ipv4"
+    IPV6 = "ipv6"
+    L2VPN = "l2vpn"
+
+
+# SAFI
+class SubsequentAddressFamily(enum.Enum):
+    UNICAST = "unicast"
+    MULTICAST = "multicast"
+    EVPN = "evpn"
 
 
 class SwitchModel(enum.Enum):

@@ -1,6 +1,36 @@
-# Monsoon - A data visualization and monitoring solution for SONiC
+<p align="center">
+<img src="images/monsoon_logo.png" alt="Monsoon Logo" width="200"/> 
+</p>
 
-Try [Live Demo](http://monsoon.stordis.com:8080).
+<p align="center">
+  <span style="font-size:3em;">**📢 Check out Next-generation Agentless SONiC Monitoring MONSOON2 Here!** 🚀</span><br>
+  <a href="https://stordis.com/test-monsoon2/" style="font-size:2em; font-weight:bold;">Get Monsoon2</a>
+</p>
+
+
+
+
+<p align="center">
+<a href="https://hub.docker.com/r/stordis/sonic-exporter/">
+      <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/stordis/sonic-exporter?style=for-the-badge&logo=docker&logoColor=white&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fstordis%2Fsonic-exporter" />
+    </a>
+<a href="https://github.com/stordis/monsoon/actions">
+      <img alt="Tests Passing" src="https://img.shields.io/github/actions/workflow/status/stordis/monsoon/docker-publish.yml?style=for-the-badge&logo=github&link=https%3A%2F%2Fgithub.com%2FSTORDIS%2Fmonsoon%2Factions
+      " />
+</a>
+<a href="https://github.com/stordis/monsoon/issues">
+      <img alt="Issues" src="https://img.shields.io/github/issues/stordis/monsoon?style=for-the-badge&logo=github&link=https%3A%2F%2Fgithub.com%2FSTORDIS%monsoon%2Fissues
+      " />
+</a>
+<a href="https://github.com/stordis/monsoon/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/stordis/monsoon?style=for-the-badge&logo=github&link=https%3A%2F%2Fgithub.com%2FSTORDIS%monsoon%2Fgraphs%2Fcontributors" />
+</a>
+<a href="https://github.com/stordis/monsoon/pulls?q=">
+      <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/stordis/monsoon?color=0088ff&style=for-the-badge&logo=github&link=https%3A%2F%2Fgithub.com%2FSTORDIS%monsoon%2Fpulls" />
+</a>
+</p>
+
+# Monsoon - A data visualization and monitoring solution for SONiC
 
 Monsoon uses Prometheus and Grafana for data collection and visualization. Apart from using 'node_exporter' (standard data collector for prometheus client) Monsoon uses sonic-exporter to fetch data from SONiC DB to Prometheus and Grafana.
 
@@ -17,7 +47,7 @@ Monsoon uses Prometheus and Grafana for data collection and visualization. Apart
       - [Start node-exporter container on SONiC switch](#start-node-exporter-container-on-sonic-switch)
       - [Verify node-exporter installation](#verify-node-exporter-installation)
     - [Install Prometheus](#install-prometheus)
-      - [Verify Prometheus Targets Status :](#verify-prometheus-targets-status-)
+      - [Verify Prometheus Targets Status](#verify-prometheus-targets-status)
     - [Install Grafana](#install-grafana)
       - [Verify Grafana Installation](#verify-grafana-installation)
       - [Add data source to Grafana](#add-data-source-to-grafana)
@@ -42,7 +72,7 @@ Contributions can be made to Monsoon Project by :
 
 ## Monsoon Design 
 A high level monsoon design is as follows, various components are explained in further sections.
-![Monsoon Design](images/monsoon_design.png)
+![Monsoon Design](images/monsoon.drawio.svg)
 
 ## Getting started with monsoon
   There are 4 major components of monsoon project- sonic-exporter, node-exporter, Prometheus, Grafana.
@@ -59,7 +89,7 @@ If your switch is not connected to internet, then on any of your host connected 
   #### Start sonic-exporter container
   Execute following command on SONiC host to start sonic-exporter container :
 
-    docker run -e SONIC_EXPORTER_ADDRESS="0.0.0.0" --name sonic-exporter --network=host --pid=host --privileged --restart=always -d -v /var/run/redis:/var/run/redis -v /usr/bin/vtysh:/usr/bin/vtysh -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/ntpq:/usr/bin/ntpq -v /usr/lib/x86_64-linux-gnu/:/usr/lib/x86_64-linux-gnu/ --log-opt mode=non-blocking --log-opt max-buffer-size=4m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt compress=true stordis/sonic-exporter:main
+    docker run -e SONIC_EXPORTER_ADDRESS="0.0.0.0" --name sonic-exporter --network=host --pid=host --privileged --restart=always -d -v /var/run/redis:/var/run/redis -v /usr/bin/vtysh:/usr/bin/vtysh -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/ntpq:/usr/bin/ntpq -v /usr/lib/x86_64-linux-gnu/:/usr/lib/x86_64-linux-gnu/ -v /usr/bin/cgexec:/usr/bin/cgexec --log-opt mode=non-blocking --log-opt max-buffer-size=4m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt compress=true stordis/sonic-exporter:main
 
   #### Verify sonic-exporter installation:
   Metrices from sonic-exporter should be available in raw text format :
@@ -91,10 +121,10 @@ If your switch is not connected to internet, then on any of your host connected 
   It is reommended to install Prometheus on separate host i.e. Ubuntu_20.04 etc.
   Config file ~/monsoon/config/prometheus.yml can be used for prometheus installation, also replace the exporter IPs at the bottom in this file with your SONiC switch. Then execute following :
     
-    docker run -d -p 9090:9090 -v ~/monsoon/config/prometheus.yml:/etc/prometheus/prometheus.yml --log-opt mode=non-blocking --log-opt max-buffer-size=4m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt compress=true prom/prometheus:v2.37.0
+    docker run -d -p 9090:9090 -v ~/monsoon/config/prometheus.yml:/etc/prometheus/prometheus.yml --log-opt mode=non-blocking --log-opt max-buffer-size=4m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt compress=true prom/prometheus
   Further details of Prometheus installation are [here](https://prometheus.io/docs/prometheus/latest/installation/).
 
-  #### Verify Prometheus Targets Status :
+  #### Verify Prometheus Targets Status
   Open Prometheus web console at http://prometheus_ip:9090 and check for target status under 'status' tab.  ![Target Status](images/prom_target_sts.png)
 
 
@@ -102,7 +132,7 @@ If your switch is not connected to internet, then on any of your host connected 
   Grafana is a configurable data visulization tool, In opur case it help to visualize data fetched from prometheus (in step above). Grafana can be installed on same host as Prometheus but recommended is to install it on a separate host i.e. Ubuntu_20.04 etc. 
   On Debian/Ubuntu Grafana container can be started as follows : 
   ```
-  docker run -d -p 3000:3000 --name grafana --log-opt mode=non-blocking --log-opt max-buffer-size=4m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt compress=true grafana/grafana-oss:9.0.6
+  docker run -d -p 3000:3000 --name grafana --log-opt mode=non-blocking --log-opt max-buffer-size=4m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt compress=true -e "GF_SERVER_ENABLE_GZIP=true" grafana/grafana-oss
   ```
   Further details to run Grafana container are [here](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/).
   #### Verify Grafana Installation

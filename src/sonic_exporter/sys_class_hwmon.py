@@ -1,3 +1,18 @@
+# Copyright 2021 STORDIS GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import enum
 import json
 import re
@@ -237,7 +252,10 @@ class SystemClassHWMon:
     ) -> SensorData:
         try:
             match sensor_type:
-                case SystemClassHWMon.SensorType.INLET | SystemClassHWMon.SensorType.VOLTAGE:
+                case (
+                    SystemClassHWMon.SensorType.INLET
+                    | SystemClassHWMon.SensorType.VOLTAGE
+                ):
                     si_unit = SIUnit.VOLTAGE
                     value = int(data) / 1000
                 case SystemClassHWMon.SensorType.TEMPERATURE:
@@ -278,7 +296,7 @@ class SystemClassHWMon:
         return SensorData(name=metric_name, unit=si_unit, value=value)
 
     @staticmethod
-    def get_sensor_data(file_path: Path) -> SensorData:
+    def get_sensor_data(file_path: Path) -> Optional[SensorData]:
         if match := SystemClassHWMon.sensor_regex.match(file_path.name):
             sensor_type = SystemClassHWMon.SensorType(match.group(1))
             try:
@@ -291,12 +309,13 @@ class SystemClassHWMon:
                 # logging.debug(e)
         # else:
         # logging.debug(file_path.name)
+        return None
 
     @property
     def sensors(self) -> Dict[str, Sensor]:
         for file_path in self.sys_path.iterdir():
             if file_path.is_dir():
-                name = None
+                name = ""
                 address = None
                 modalias = None
                 name_path = file_path / self.GlobalAttributes.NAME.value

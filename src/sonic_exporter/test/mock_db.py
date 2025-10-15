@@ -1,17 +1,32 @@
+# Copyright 2021 STORDIS GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 import json
 import re
 from enum import Enum
+from typing import Dict, Any
 from importlib.resources import read_text
 from importlib import import_module
 
 from sonic_exporter.enums import SwitchModel
 
-from . import ressources
+from . import resources
 
 
 class SonicV2Connector:
-    model: SwitchModel = SwitchModel.AS5853
-    version: str = "4.0.1"
+    model: SwitchModel = SwitchModel.AS7726
+    version: str = "4.0.2"
 
     class DB(Enum):
         APPL_DB = "appl"
@@ -43,7 +58,7 @@ class SonicV2Connector:
         return json.loads(
             read_text(
                 import_module(
-                    f"{ressources.__package__}.{SonicV2Connector.get_version(version)}"
+                    f"{resources.__package__}.{SonicV2Connector.get_version(version)}"
                 ),
                 f"{model.value}.{db.value}.json",
             )
@@ -51,7 +66,7 @@ class SonicV2Connector:
 
     def __init__(self, password: str):
         self.password = password
-        self.db = {}
+        self.db: Dict[SonicV2Connector.DB, Dict[str, Any]] = {}
 
     def connect(self, db: DB):
         self.db = {**self.db, **{db: self.load_db(self.version, self.model, db)}}
@@ -62,9 +77,9 @@ class SonicV2Connector:
     def get(self, db: DB, key: str, sub_key: str):
         return self.db[db][key]["value"].get(sub_key, None)
 
-    def keys(self, db: DB, pattern: str = None):
+    def keys(self, db: DB, pattern: str = ""):
         regex = re.compile(
-            r"^{}$".format(pattern.replace("*", ".*?").replace("|", "\|"))
+            r"^{}$".format(pattern.replace("*", ".*?").replace("|", "\\|"))
         )
         for key in self.db[db].keys():
             if regex.match(str(key)):
